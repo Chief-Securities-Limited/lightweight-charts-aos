@@ -3,6 +3,7 @@ package com.tradingview.lightweightcharts.api.interfaces
 import android.util.SizeF
 import com.tradingview.lightweightcharts.api.series.models.TimeRange
 import com.tradingview.lightweightcharts.api.options.models.TimeScaleOptions
+import com.tradingview.lightweightcharts.api.series.models.LogicalRange
 import com.tradingview.lightweightcharts.api.series.models.Time
 
 interface TimeScaleApi {
@@ -15,6 +16,7 @@ interface TimeScaleApi {
         const val SCROLL_TO_REAL_TIME = "scrollToRealTime"
         const val GET_VISIBLE_RANGE = "getVisibleRange"
         const val SET_VISIBLE_RANGE = "setVisibleRange"
+        const val SET_VISIBLE_LOGICAL_RANGE = "setVisibleLogicalRange"
         const val RESET_TIME_SCALE = "resetTimeScale"
         const val FIT_CONTENT = "fitContent"
         const val SUBSCRIBE_VISIBLE_TIME_RANGE_CHANGE = "subscribeVisibleTimeRangeChange"
@@ -25,6 +27,7 @@ interface TimeScaleApi {
         const val WIDTH = "timeScaleWidth"
         const val HEIGHT = "timeScaleHeight"
         const val SUBSCRIBE_SIZE_CHANGE = "subscribeTimeScaleSizeChange"
+        const val SUBSCRIBE_VISIBLE_LOGICAL_RANGE_CHANGE = "subscribeVisibleLogicalRangeChange"
     }
 
     object Params {
@@ -63,6 +66,8 @@ interface TimeScaleApi {
      * @param range target visible range of data
      */
     fun setVisibleRange(range: TimeRange)
+
+    fun setVisibleLogicalRange(logicalRange: LogicalRange)
 
     /**
      * Restores default zooming and scroll position of the time scale
@@ -149,4 +154,8 @@ interface TimeScaleApi {
      * Removes a subscription to size changes
      */
     fun unsubscribeSizeChange(onSizeChange: (size: SizeF) -> Unit)
+
+    fun subscribeVisibleLogicalRangeChange(onVisibleLogicalRangeChange: (params: LogicalRange?) -> Unit)
+
+    fun unsubscribeVisibleLogicalRangeChange(onVisibleLogicalRangeChange: (params: LogicalRange?) -> Unit)
 }

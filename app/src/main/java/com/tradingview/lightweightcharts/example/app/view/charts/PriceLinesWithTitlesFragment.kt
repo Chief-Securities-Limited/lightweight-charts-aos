@@ -23,7 +23,7 @@ import com.tradingview.lightweightcharts.example.app.viewmodel.PriceLinesWithTit
 import com.tradingview.lightweightcharts.view.ChartsView
 import kotlinx.android.synthetic.main.layout_chart_fragment.*
 
-class PriceLinesWithTitlesFragment: Fragment() {
+class PriceLinesWithTitlesFragment : Fragment() {
 
     private lateinit var viewModel: PriceLinesWithTitlesViewModel
 
@@ -98,6 +98,7 @@ class PriceLinesWithTitlesFragment: Fragment() {
                 is ChartsView.State.Ready -> {
                     Toast.makeText(context, "Chart ${view.id} is ready", Toast.LENGTH_SHORT).show()
                 }
+
                 is ChartsView.State.Error -> {
                     Toast.makeText(context, state.exception.localizedMessage, Toast.LENGTH_LONG).show()
                 }
@@ -107,6 +108,10 @@ class PriceLinesWithTitlesFragment: Fragment() {
 
     private fun applyChartOptions() {
         charts_view.api.applyOptions {
+            timeScale = timeScaleOptions {
+                fixRightEdge = true
+                fixLeftEdge = true
+            }
             layout = layoutOptions {
                 textColor = Color.parseColor("#d1d4dc").toIntColor()
                 background = SolidColor(Color.BLACK)
@@ -143,24 +148,24 @@ class PriceLinesWithTitlesFragment: Fragment() {
     }
 
     private fun createSeriesWithData(
-            data: Data,
-            priceScale: PriceScaleId,
-            chartApi: ChartApi,
-            onSeriesCreated: (SeriesApi) -> Unit
+        data: Data,
+        priceScale: PriceScaleId,
+        chartApi: ChartApi,
+        onSeriesCreated: (SeriesApi) -> Unit
     ) {
         chartApi.addLineSeries(
-                options = LineSeriesOptions(
-                        color = Color.rgb(0, 120, 255).toIntColor(),
-                        lineWidth = LineWidth.TWO,
-                        crosshairMarkerVisible = false,
-                        lastValueVisible = false,
-                        priceLineVisible = false,
-                        lastPriceAnimation = LastPriceAnimationMode.CONTINUOUS
-                ),
-                onSeriesCreated = { api ->
-                    api.setData(data.list)
-                    onSeriesCreated(api)
-                }
+            options = LineSeriesOptions(
+                color = Color.rgb(0, 120, 255).toIntColor(),
+                lineWidth = LineWidth.TWO,
+                crosshairMarkerVisible = false,
+                lastValueVisible = false,
+                priceLineVisible = false,
+                lastPriceAnimation = LastPriceAnimationMode.CONTINUOUS
+            ),
+            onSeriesCreated = { api ->
+                api.setData(data.list)
+                onSeriesCreated(api)
+            }
         )
     }
 }

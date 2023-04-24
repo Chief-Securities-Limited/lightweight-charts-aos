@@ -61,6 +61,9 @@ class MainActivity : AppCompatActivity() {
                     R.id.menu_view_pager -> {
                         startActivity(Intent(this@MainActivity, ViewPagerActivity::class.java))
                     }
+                    R.id.menu_price_custom -> {
+                        startFragment(CustomChartFragment::class.java)
+                    }
                 }
             }
             drawer.closeDrawers()

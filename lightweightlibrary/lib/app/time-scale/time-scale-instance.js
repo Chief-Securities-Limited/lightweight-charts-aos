@@ -35,6 +35,7 @@ export default class TimeScaleInstanceService {
             new ScrollToRealTime(),
             new GetVisibleRange(),
             new SetVisibleRange(),
+            new SetVisibleLogicalRange(),
             new ResetTimeScale(),
             new FitContent(),
             new TimeToCoordinate(),
@@ -49,7 +50,8 @@ export default class TimeScaleInstanceService {
     _timeScaleInstanceSusbcriptions() {
         return [
             new SubscribeVisibleTimeRangeChange(),
-            new SubscribeSizeChange()
+            new SubscribeSizeChange(),
+            new SubscribeVisibleLogicalRangeChange()
         ];
     }
 
@@ -164,6 +166,14 @@ class SetVisibleRange extends TimeScaleMethod {
     }
 }
 
+class SetVisibleLogicalRange extends TimeScaleMethod {
+    constructor() {
+        super("setVisibleLogicalRange", (timeScale, params) => {
+            timeScale.setVisibleLogicalRange(params.range);
+        });
+    }
+}
+
 class ResetTimeScale extends TimeScaleMethod {
     constructor() {
         super("resetTimeScale", (timeScale, params) => {
@@ -231,7 +241,7 @@ class Height extends TimeScaleMethodWithReturn {
 class SubscribeVisibleTimeRangeChange extends TimeScaleSubscription {
     constructor() {
         super(
-            "subscribeVisibleTimeRangeChange", 
+            "subscribeVisibleTimeRangeChange",
             (timeScale, callback) => {
                 timeScale.subscribeVisibleTimeRangeChange(callback);
                 return callback;
@@ -256,6 +266,21 @@ class SubscribeSizeChange extends TimeScaleSubscription {
             },
             (timeScale, subscription) => {
                 timeScale.unsubscribeSizeChange(subscription);
+            }
+        );
+    }
+}
+
+class SubscribeVisibleLogicalRangeChange extends TimeScaleSubscription {
+    constructor() {
+        super(
+            "subscribeVisibleLogicalRangeChange",
+            (timeScale, callback) => {
+                timeScale.subscribeVisibleLogicalRangeChange(callback);
+                return callback;
+            },
+            (timeScale, subscription) => {
+                timeScale.unsubscribeVisibleLogicalRangeChange(subscription);
             }
         );
     }
