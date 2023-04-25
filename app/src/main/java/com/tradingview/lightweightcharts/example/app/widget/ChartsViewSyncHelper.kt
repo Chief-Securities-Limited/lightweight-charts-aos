@@ -10,6 +10,7 @@ class ChartsViewSyncHelper {
 
     private val touchChartsHashCode = TouchChartsHashCode()
     private val chartsViewLayoutWrapperMap = mutableMapOf<Int, ChartsViewWrapper>()
+    private var syncCrosshairMoveListener: SyncCrosshairMoveListener? = null
 
     private val visibleLogicalRangeChangeListener = object : VisibleLogicalRangeChangeListener {
         override fun onVisibleLogicalRangeChange(layout: ChartsToolsLayout, params: LogicalRange?) {
@@ -28,6 +29,7 @@ class ChartsViewSyncHelper {
             chartsViewLayoutWrapperMap.entries.forEach {
                 it.value.updateCrosshair(params)
             }
+            syncCrosshairMoveListener?.onSyncCrosshairMove(params)
         }
     }
 
@@ -51,6 +53,10 @@ class ChartsViewSyncHelper {
             it.unSubscribeAll()
         }
         chartsViewLayoutWrapperMap.remove(hashCode)
+    }
+
+    fun setSyncCrosshairMoveListener(syncCrosshairMoveListener: SyncCrosshairMoveListener) {
+        this.syncCrosshairMoveListener = syncCrosshairMoveListener
     }
 
     fun clear() {
@@ -126,4 +132,10 @@ class ChartsViewSyncHelper {
         var code: Int = 0
     )
 }
+
+interface SyncCrosshairMoveListener {
+    fun onSyncCrosshairMove(params: MouseEventParams)
+}
+
+
 

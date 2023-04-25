@@ -39,6 +39,7 @@ import com.tradingview.lightweightcharts.example.app.widget.ChartsViewSyncHelper
 import com.tradingview.lightweightcharts.runtime.messaging.LogLevel
 import com.tradingview.lightweightcharts.view.ChartsView
 import com.tradingview.lightweightcharts.view.gesture.TouchDelegate
+import kotlinx.android.synthetic.main.activity_mock_data_charts.charts_tools_layout_1
 import kotlinx.android.synthetic.main.layout_bar_chart_fragment.charts_view
 import kotlinx.android.synthetic.main.layout_chart_fragment.charts_view
 import kotlinx.android.synthetic.main.layout_multiple_chart_fragment.btn_chart_title_1
@@ -113,6 +114,34 @@ class CustomChartFragment : Fragment() {
                 chartsViewSyncHelper.addChartsView(charts_cross_hair_layout_3)
             }
         }
+
+        charts_view_1.api.timeScale.subscribeVisibleLogicalRangeChange {
+            val time = System.currentTimeMillis()
+            charts_view_1.api.timeScale.timeToCoordinate(Time.BusinessDay(2018, 11, 13)) {
+                Log.d("timeToCoordinate Float", "${it}")
+                Log.d("timeToCoordinate", "${System.currentTimeMillis() - time}")
+            }
+        }
+
+        charts_tools_layout_1.setSetMarkersAdapter(object : ChartsToolsLayout.MarkersAdapter {
+
+            val cacheViews = mutableListOf<View>()
+
+            override fun getMarkerView(time: Time): View {
+
+                if (cacheViews.isNotEmpty()) {
+                    return cacheViews.removeFirst()
+                }
+
+                return View(context).apply {
+                    this.setBackgroundResource(R.mipmap.ic_launcher_round)
+                }
+            }
+
+            override fun releaseMarkerView(time: Time, view: View) {
+                cacheViews.add(view)
+            }
+        })
     }
 
     private fun observe() {
@@ -196,26 +225,7 @@ class CustomChartFragment : Fragment() {
 //        markers.add(dataList[31].time)
 //        markers.add(dataList[33].time)
         markers.add(dataList[36].time)
-        layout.setMarkers(markers, object :
-            ChartsToolsLayout.MarkersAdapter {
-
-            val cacheViews = mutableListOf<View>()
-
-            override fun getMarkerView(time: Time): View {
-
-                if (cacheViews.isNotEmpty()) {
-                    return cacheViews.removeFirst()
-                }
-
-                return View(context).apply {
-                    this.setBackgroundResource(R.mipmap.ic_launcher_round)
-                }
-            }
-
-            override fun releaseMarkerView(time: Time, view: View) {
-                cacheViews.add(view)
-            }
-        })
+        layout.setMarkers(markers)
     }
 
 }

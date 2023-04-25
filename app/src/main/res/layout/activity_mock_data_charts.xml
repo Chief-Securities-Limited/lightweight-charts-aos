@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RadioGroup
+                android:id="@+id/rg_k_line"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <RadioButton
+                    android:id="@+id/rb_minute_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="時分" />
+
+                <RadioButton
+                    android:id="@+id/rb_five_day"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="5日" />
+
+                <RadioButton
+                    android:id="@+id/rb_day_k_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="日K" />
+
+                <RadioButton
+                    android:id="@+id/rb_week_k_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="周K" />
+
+                <RadioButton
+                    android:id="@+id/rb_month_k_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="月K" />
+
+
+                <RadioButton
+                    android:id="@+id/rb_year_k_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="年" />
+
+            </RadioGroup>
+
+            <RadioGroup
+                android:id="@+id/rg_k_line_group_type"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rg_k_line">
+
+                <RadioButton
+                    android:id="@+id/rb_k_line_group_type_only"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="僅K線" />
+
+                <RadioButton
+                    android:id="@+id/rb_k_line_group_type_ema"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="EMA" />
+
+            </RadioGroup>
+
+            <com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout
+                android:id="@+id/charts_tools_layout_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/rg_k_line_group_type">
+
+                <com.tradingview.lightweightcharts.example.app.view.DebugChartsView
+                    android:id="@+id/charts_view_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp" />
+
+            </com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout>
+
+            <com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout
+                android:id="@+id/charts_tools_layout_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                app:layout_constraintTop_toBottomOf="@id/charts_tools_layout_1">
+
+                <com.tradingview.lightweightcharts.view.ChartsView
+                    android:id="@+id/charts_view_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:visibility="visible" />
+
+            </com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout>
+
+            <com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout
+                android:id="@+id/charts_tools_layout_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                app:layout_constraintTop_toBottomOf="@id/charts_tools_layout_2">
+
+                <com.tradingview.lightweightcharts.view.ChartsView
+                    android:id="@+id/charts_view_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:visibility="visible" />
+
+            </com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout>
+
+            <TextView
+                android:id="@+id/tv_cross_plank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/cardview_dark_background"
+                android:padding="8dp"
+                android:textColor="@color/design_default_color_surface"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </TextView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

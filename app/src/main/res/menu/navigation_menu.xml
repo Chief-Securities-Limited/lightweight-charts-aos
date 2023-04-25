@@ -30,6 +30,9 @@
                 <item
                     android:id="@+id/menu_price_custom"
                     android:title="Custom Chart" />
+                <item
+                    android:id="@+id/mock_data_charts"
+                    android:title="Mock Data Charts" />
             </menu>
         </item>
     </group>

@@ -81,7 +81,7 @@ class PriceLinesWithTitlesFragment : Fragment() {
                         color = Color.parseColor("#be1238").toIntColor(),
                         lineWidth = LineWidth.TWO,
                         lineStyle = LineStyle.SOLID,
-                        axisLabelVisible = true,
+                        axisLabelVisible = false,
                         title = "maximum price",
                     )
                 )
@@ -160,7 +160,8 @@ class PriceLinesWithTitlesFragment : Fragment() {
                 crosshairMarkerVisible = false,
                 lastValueVisible = false,
                 priceLineVisible = false,
-                lastPriceAnimation = LastPriceAnimationMode.CONTINUOUS
+                lastPriceAnimation = LastPriceAnimationMode.CONTINUOUS,
+                lineStyle = LineStyle.SPARSE_DOTTED
             ),
             onSeriesCreated = { api ->
                 api.setData(data.list)

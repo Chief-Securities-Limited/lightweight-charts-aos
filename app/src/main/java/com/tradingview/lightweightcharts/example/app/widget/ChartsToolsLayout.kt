@@ -34,6 +34,10 @@ class ChartsToolsLayout @JvmOverloads constructor(
     private var hasSubscribeMarkersHandle = false
     private var markersSize: Size
 
+    private val onVisibleLogicalRangeChanged = fun(params: LogicalRange?) {
+        updateMarkers()
+    }
+
     init {
         addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
             for (i in 0 until childCount) {
@@ -61,20 +65,34 @@ class ChartsToolsLayout @JvmOverloads constructor(
         return chartsView
     }
 
-    fun setMarkers(markerTimeList: List<Time>, markersAdapter: MarkersAdapter) {
+    fun setMarkers(markerTimeList: List<Time>) {
+        curMarkersMap.entries.forEach {
+            removeView(it.value)
+            markersAdapter?.releaseMarkerView(it.key, it.value)
+        }
+        curMarkersMap.clear()
         this.markerTimeList.clear()
         this.markerTimeList.addAll(markerTimeList)
-        this.markersAdapter = markersAdapter
 
         if (!hasSubscribeMarkersHandle) {
             hasSubscribeMarkersHandle = true
             chartsView?.api?.timeScale?.subscribeVisibleLogicalRangeChange(onVisibleLogicalRangeChanged)
         }
+
+        updateMarkers()
+    }
+
+    fun setSetMarkersAdapter(markersAdapter: MarkersAdapter) {
+        this.markersAdapter = markersAdapter
     }
 
     fun clearMarkers() {
+        curMarkersMap.entries.forEach {
+            removeView(it.value)
+            markersAdapter?.releaseMarkerView(it.key, it.value)
+        }
+        curMarkersMap.clear()
         this.markerTimeList.clear()
-        this.markersAdapter = null
         hasSubscribeMarkersHandle = false
         chartsView?.api?.timeScale?.unsubscribeVisibleLogicalRangeChange(onVisibleLogicalRangeChanged)
     }
@@ -119,8 +137,7 @@ class ChartsToolsLayout @JvmOverloads constructor(
         }
     }
 
-    private val onVisibleLogicalRangeChanged = fun(params: LogicalRange?) {
-
+    private fun updateMarkers() {
         val adapter = this.markersAdapter
         if (adapter == null || markerTimeList.isEmpty()) {
             return
