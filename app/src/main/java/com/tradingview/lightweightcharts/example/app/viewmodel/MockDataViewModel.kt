@@ -40,7 +40,7 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
     private val mavolChartModel = ChartModel()
     private val lineChartModel = ChartModel()
 
-    private var curKLineTimeType = KLineTimeType.MINUTE_TIME
+    private var curKLineTimeType = KLineTimeType.YEAR_K_LINE
     private var curKLineGroupType = KLineGroupType.ONLY_K_LINE
 
     init {
@@ -51,21 +51,21 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
             lastValueVisible = false,
             visible = false
         )))
-        kLineChartModel.put(K_LINE_EMA_1, ChartSeriesModel(true, LineSeriesOptions(
+        kLineChartModel.put(K_LINE_EMA_1, ChartSeriesModel(false, LineSeriesOptions(
             lineWidth = LineWidth.ONE,
             baseLineVisible = false,
             priceLineVisible = false,
             lastValueVisible = false,
             color = Color.GREEN.toIntColor()
         )))
-        kLineChartModel.put(K_LINE_EMA_2, ChartSeriesModel(true, LineSeriesOptions(
+        kLineChartModel.put(K_LINE_EMA_2, ChartSeriesModel(false, LineSeriesOptions(
             lineWidth = LineWidth.ONE,
             baseLineVisible = false,
             priceLineVisible = false,
             lastValueVisible = false,
             color = Color.BLUE.toIntColor()
         )))
-        kLineChartModel.put(K_LINE_EMA_3, ChartSeriesModel(true, LineSeriesOptions(
+        kLineChartModel.put(K_LINE_EMA_3, ChartSeriesModel(false, LineSeriesOptions(
             lineWidth = LineWidth.ONE,
             baseLineVisible = false,
             priceLineVisible = false,
@@ -79,13 +79,20 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
         seriesDataMap[MockChartType.K_LINE] = MutableLiveData<ChartModel>()
         seriesDataMap[MockChartType.MAVOL] = MutableLiveData<ChartModel>()
         seriesDataMap[MockChartType.LINE] = MutableLiveData<ChartModel>()
+
+        this.curKLineTimeType = KLineTimeType.MINUTE_TIME
+        loadData(curKLineTimeType)
     }
 
     fun observeChartsData(type: MockChartType, owner: LifecycleOwner, observer: Observer<ChartModel>) {
+        val value = seriesDataMap[MockChartType.K_LINE]?.value
         seriesDataMap[type]?.observe(owner, observer)
     }
 
     fun selectKlineTimeType(type: KLineTimeType) {
+        if (curKLineTimeType == type) {
+            return
+        }
         this.curKLineTimeType = type
         loadData(type)
     }
@@ -133,7 +140,7 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
 
             histogramData.add(HistogramData(
                 candlestickData.time,
-                candlestickData.high * Random.nextInt(10),
+                (candlestickData.high * Random.nextInt(10)) + 100,
                 color = if (Random.nextBoolean()) colorGreen else colorRed
             ))
 
@@ -144,8 +151,8 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
         }
 
         setupKLine(list)
-        setupMavol(histogramData)
-        setupLine(lineData)
+//        setupMavol(histogramData)
+//        setupLine(lineData)
     }
 
     private fun setupKLine(series: List<SeriesData>, append: Boolean = false) {
@@ -162,7 +169,7 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
             ))
             kLineEma2List.add(LineData(
                 candlestickData.time,
-                candlestickData.low * 0.95F
+                candlestickData.low * 1.01F
             ))
             kLineEma3List.add(LineData(
                 candlestickData.time,
@@ -179,9 +186,9 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
         kLineChartModel.setCustomMarkers(emptyList())
         if (curKLineTimeType == KLineTimeType.DAY_K_LINE) {
             val markers = mutableListOf<Time>()
-            series.forEach {
-                if (Random.nextInt(10) == 1) {
-                    markers.add(it.time)
+            for (i in series.indices) {
+                if (i % 10 == 0) {
+                    markers.add(series[i].time)
                 }
             }
             kLineChartModel.setCustomMarkers(markers)

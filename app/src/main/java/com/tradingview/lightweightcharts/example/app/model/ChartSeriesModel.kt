@@ -4,6 +4,7 @@ import com.tradingview.lightweightcharts.api.interfaces.SeriesApi
 import com.tradingview.lightweightcharts.api.options.models.SeriesOptionsCommon
 import com.tradingview.lightweightcharts.api.series.common.SeriesData
 import com.tradingview.lightweightcharts.api.series.models.Time
+import com.tradingview.lightweightcharts.api.series.models.TimeRange
 
 class ChartSeriesModel(
     var isShow: Boolean = true,
@@ -36,6 +37,15 @@ class ChartSeriesModel(
     fun findSeriesData(time: Time): SeriesData? {
         return list.find {
             it.time.date.time == time.date.time
+        }
+    }
+
+    fun findSeriesData(timeRange: TimeRange): List<SeriesData> {
+        val fromTime = timeRange.from.date.time
+        val toTime = timeRange.to.date.time
+        return list.filter {
+            val time = it.time.date.time
+            fromTime <= time && time <= toTime
         }
     }
 }

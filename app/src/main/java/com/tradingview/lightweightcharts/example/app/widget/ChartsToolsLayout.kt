@@ -168,7 +168,7 @@ class ChartsToolsLayout @JvmOverloads constructor(
                         }
                         if (markerView != null) {
                             markerView.x = it / chartsViewWidth.getWidth() * width - markerView.width / 2
-                            markerView.y = height - resources.displayMetrics.density * 50
+                            markerView.y = height - resources.displayMetrics.density * 60
                         }
 
                         Log.d(TAG, "Cost Time: ${System.currentTimeMillis() - currentTimeMillis}")

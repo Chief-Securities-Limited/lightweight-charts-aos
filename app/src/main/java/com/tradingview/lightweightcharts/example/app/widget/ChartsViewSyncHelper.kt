@@ -1,5 +1,6 @@
 package com.tradingview.lightweightcharts.example.app.widget
 
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import com.tradingview.lightweightcharts.api.series.models.LogicalRange
@@ -72,6 +73,8 @@ class ChartsViewSyncHelper {
         private val visibleLogicalRangeChangeListener: VisibleLogicalRangeChangeListener,
         private val crosshairMoveListener: CrosshairMoveListener) {
 
+        private var lastCrosshairTime: Long? = -1L
+
         val onVisibleLogicalRangeChanged = fun(logicalRange: LogicalRange?) {
             if (touchChartsHashCode.code == layout.hashCode()) {
                 visibleLogicalRangeChangeListener.onVisibleLogicalRangeChange(layout, logicalRange)
@@ -79,7 +82,9 @@ class ChartsViewSyncHelper {
         }
 
         val onCrosshairMove = fun(params: MouseEventParams) {
-            if (touchChartsHashCode.code == layout.hashCode()) {
+            val time = params.time?.date?.time
+            if (touchChartsHashCode.code == layout.hashCode() && lastCrosshairTime != time) {
+                lastCrosshairTime = time
                 crosshairMoveListener.onCrosshairMove(layout, params)
             }
         }
@@ -88,8 +93,14 @@ class ChartsViewSyncHelper {
             override fun beforeTouchEvent(view: ViewGroup) {}
 
             override fun onTouchEvent(view: ViewGroup, event: MotionEvent): Boolean {
-                if (event.action == MotionEvent.ACTION_DOWN) {
-                    touchChartsHashCode.code = layout.hashCode()
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        touchChartsHashCode.code = layout.hashCode()
+                    }
+
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        lastCrosshairTime = -1L
+                    }
                 }
                 return false
             }

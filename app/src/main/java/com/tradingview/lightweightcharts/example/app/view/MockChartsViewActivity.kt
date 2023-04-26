@@ -1,15 +1,19 @@
 package com.tradingview.lightweightcharts.example.app.view
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
+import android.os.Vibrator
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.core.view.postDelayed
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.tradingview.lightweightcharts.api.interfaces.SeriesApi
 import com.tradingview.lightweightcharts.api.options.enums.TrackingModeExitMode
-import com.tradingview.lightweightcharts.api.options.models.CandlestickSeriesOptions
 import com.tradingview.lightweightcharts.api.options.models.ChartOptions
 import com.tradingview.lightweightcharts.api.options.models.CrosshairLineOptions
 import com.tradingview.lightweightcharts.api.options.models.CrosshairOptions
@@ -17,11 +21,14 @@ import com.tradingview.lightweightcharts.api.options.models.PriceScaleOptions
 import com.tradingview.lightweightcharts.api.options.models.TrackingModeOptions
 import com.tradingview.lightweightcharts.api.options.models.timeScaleOptions
 import com.tradingview.lightweightcharts.api.series.enums.CrosshairMode
+import com.tradingview.lightweightcharts.api.series.enums.SeriesMarkerPosition
+import com.tradingview.lightweightcharts.api.series.enums.SeriesMarkerShape
 import com.tradingview.lightweightcharts.api.series.models.CandlestickData
+import com.tradingview.lightweightcharts.api.series.models.HistogramData
 import com.tradingview.lightweightcharts.api.series.models.MouseEventParams
+import com.tradingview.lightweightcharts.api.series.models.SeriesMarker
 import com.tradingview.lightweightcharts.api.series.models.Time
 import com.tradingview.lightweightcharts.example.app.R
-import com.tradingview.lightweightcharts.example.app.extension.removeSeriesEx
 import com.tradingview.lightweightcharts.example.app.extension.setupSeries
 import com.tradingview.lightweightcharts.example.app.model.KLineGroupType
 import com.tradingview.lightweightcharts.example.app.model.KLineTimeType
@@ -30,10 +37,12 @@ import com.tradingview.lightweightcharts.example.app.model.MockChartType
 import com.tradingview.lightweightcharts.example.app.view.pager.NestedScrollDelegate
 import com.tradingview.lightweightcharts.example.app.viewmodel.MockDataViewModel
 import com.tradingview.lightweightcharts.example.app.viewmodel.MockDataViewModel.Companion.K_LINE_MAIN_SERIES
+import com.tradingview.lightweightcharts.example.app.viewmodel.MockDataViewModel.Companion.MAVOL_SERIES
 import com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout
 import com.tradingview.lightweightcharts.example.app.widget.ChartsViewSyncHelper
 import com.tradingview.lightweightcharts.example.app.widget.SyncCrosshairMoveListener
 import com.tradingview.lightweightcharts.view.ChartsView
+import kotlinx.android.synthetic.main.activity_mock_data_charts.btn_fullscreen
 import kotlinx.android.synthetic.main.activity_mock_data_charts.charts_tools_layout_1
 import kotlinx.android.synthetic.main.activity_mock_data_charts.charts_tools_layout_2
 import kotlinx.android.synthetic.main.activity_mock_data_charts.charts_tools_layout_3
@@ -42,7 +51,13 @@ import kotlinx.android.synthetic.main.activity_mock_data_charts.charts_view_2
 import kotlinx.android.synthetic.main.activity_mock_data_charts.charts_view_3
 import kotlinx.android.synthetic.main.activity_mock_data_charts.rg_k_line
 import kotlinx.android.synthetic.main.activity_mock_data_charts.rg_k_line_group_type
+import kotlinx.android.synthetic.main.activity_mock_data_charts.toolbar
+import kotlinx.android.synthetic.main.activity_mock_data_charts.tv_charts_view_1_y_axis_average
+import kotlinx.android.synthetic.main.activity_mock_data_charts.tv_charts_view_1_y_axis_max
+import kotlinx.android.synthetic.main.activity_mock_data_charts.tv_charts_view_1_y_axis_min
+import kotlinx.android.synthetic.main.activity_mock_data_charts.tv_charts_view_2_y_axis_max
 import kotlinx.android.synthetic.main.activity_mock_data_charts.tv_cross_plank
+
 
 class MockDataChartsActivity : AppCompatActivity() {
 
@@ -52,6 +67,14 @@ class MockDataChartsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            val params = window.attributes
+            params.flags = params.flags or WindowManager.LayoutParams.FLAG_FULLSCREEN
+            window.attributes = params
+        }
+
         setContentView(R.layout.activity_mock_data_charts)
         viewModel = ViewModelProvider(this)[MockDataViewModel::class.java]
         setupUi()
@@ -68,7 +91,17 @@ class MockDataChartsActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupUi() {
+
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            toolbar.isVisible = false
+            btn_fullscreen.text = "退出全屏"
+        } else {
+            toolbar.isVisible = true
+            btn_fullscreen.text = "全屏"
+        }
+
         val chartOptions = getChartOptions()
         MOCK_CHART_TYPE_LIST.forEach { type ->
             val chartsView = findChartsView(type)
@@ -124,6 +157,14 @@ class MockDataChartsActivity : AppCompatActivity() {
                         val text = "開盤：${seriesData.open} 收盤：${seriesData.close} 最高：${seriesData.high}  最低：${seriesData.low}"
                         tv_cross_plank.text = text
                     }
+
+                    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                    if (vibrator.hasVibrator()) {
+                        if (vibrator.hasVibrator()) {
+                            val pattern = longArrayOf(0, 30)
+                            vibrator.vibrate(pattern, -1)
+                        }
+                    }
                 }
             }
         })
@@ -139,23 +180,103 @@ class MockDataChartsActivity : AppCompatActivity() {
                 viewModel.selectKLineGroupType(it)
             }
         }
+
+        charts_view_1.api.timeScale.subscribeVisibleTimeRangeChange { timeRange ->
+            timeRange?.also {
+                val chartModel = viewModel.getChartModel(MockChartType.K_LINE)
+                chartModel.get(K_LINE_MAIN_SERIES)?.also { chartSeriesModel ->
+                    val list = chartSeriesModel.findSeriesData(timeRange)
+                    val maxData = list.maxByOrNull { (it as CandlestickData).high }
+                    val minData = list.minByOrNull { (it as CandlestickData).low }
+
+                    if (maxData != null && minData != null) {
+                        val maxCandlestickData = maxData as CandlestickData
+                        val minCandlestickData = minData as CandlestickData
+                        tv_charts_view_1_y_axis_max.text = maxCandlestickData.high.toString()
+                        tv_charts_view_1_y_axis_min.text = minCandlestickData.low.toString()
+                        tv_charts_view_1_y_axis_average.text = ((maxCandlestickData.high + minCandlestickData.low) / 2).toString()
+
+                        val markers = mutableListOf<SeriesMarker>()
+                        markers.add(SeriesMarker(
+                            time = maxCandlestickData.time,
+                            text = maxCandlestickData.high.toString(),
+                            position = SeriesMarkerPosition.ABOVE_BAR,
+                            shape = SeriesMarkerShape.ARROW_DOWN
+                        ))
+
+                        markers.add(SeriesMarker(
+                            time = minCandlestickData.time,
+                            text = minCandlestickData.low.toString(),
+                            position = SeriesMarkerPosition.BELOW_BAR,
+                            shape = SeriesMarkerShape.ARROW_UP
+                        ))
+
+                        markers.sortBy { it.time?.date?.time }
+                        chartSeriesModel.seriesApi?.setMarkers(markers)
+                    }
+                }
+            }
+        }
+
+        charts_view_2.api.timeScale.subscribeVisibleTimeRangeChange { timeRange ->
+            timeRange?.also {
+                val chartModel = viewModel.getChartModel(MockChartType.MAVOL)
+                chartModel.get(MAVOL_SERIES)?.also {
+                    val list = it.findSeriesData(timeRange)
+                    val max = list.maxOfOrNull { (it as HistogramData).value }
+
+                    if (max != null) {
+                        tv_charts_view_2_y_axis_max.text = max.toInt().toString()
+                    }
+                }
+            }
+        }
+
+        btn_fullscreen.setOnClickListener {
+            val orientation = resources.configuration.orientation
+            if (orientation != Configuration.ORIENTATION_LANDSCAPE) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        }
+
+
     }
 
     private fun setupObserve() {
-        MOCK_CHART_TYPE_LIST.forEach { type ->
-            viewModel.observeChartsData(type, this@MockDataChartsActivity) { chartModel ->
-                val apiDelegate = findChartsView(type).api
-                chartModel.getAll().forEach { chartSeriesModel ->
-                    apiDelegate.setupSeries(chartSeriesModel)
-                }
+        charts_view_1.subscribeOnChartStateChange {
+            if (it is ChartsView.State.Ready) {
+                setupObserveChartsData(MockChartType.K_LINE)
+            }
+        }
 
-                val chartsViewLayout = findChartsViewLayout(type)
-                val customMarkers = chartModel.getCustomMarkers()
-                if (customMarkers.isEmpty()) {
-                    chartsViewLayout.clearMarkers()
-                } else {
-                    chartsViewLayout.setMarkers(customMarkers)
-                }
+        charts_view_2.subscribeOnChartStateChange {
+            if (it is ChartsView.State.Ready) {
+                setupObserveChartsData(MockChartType.MAVOL)
+            }
+        }
+
+        charts_view_3.subscribeOnChartStateChange {
+            if (it is ChartsView.State.Ready) {
+                setupObserveChartsData(MockChartType.LINE)
+            }
+        }
+    }
+
+    private fun setupObserveChartsData(type: MockChartType) {
+        viewModel.observeChartsData(type, this@MockDataChartsActivity) { chartModel ->
+            val apiDelegate = findChartsView(type).api
+            chartModel.getAll().forEach { chartSeriesModel ->
+                apiDelegate.setupSeries(chartSeriesModel)
+            }
+
+            val chartsViewLayout = findChartsViewLayout(type)
+            val customMarkers = chartModel.getCustomMarkers()
+            if (customMarkers.isEmpty()) {
+                chartsViewLayout.clearMarkers()
+            } else {
+                chartsViewLayout.setMarkers(customMarkers)
             }
         }
     }
