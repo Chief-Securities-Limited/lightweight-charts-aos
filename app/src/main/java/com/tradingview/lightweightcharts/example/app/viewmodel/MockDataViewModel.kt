@@ -150,8 +150,8 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
         }
 
         setupKLine(list)
-//        setupMavol(histogramData)
-//        setupLine(lineData)
+        setupMavol(histogramData)
+        setupLine(lineData)
     }
 
     private fun setupKLine(series: List<SeriesData>, append: Boolean = false) {
