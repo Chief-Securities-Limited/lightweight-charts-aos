@@ -10,6 +10,7 @@ import com.tradingview.lightweightcharts.api.options.models.HistogramSeriesOptio
 import com.tradingview.lightweightcharts.api.options.models.LineSeriesOptions
 import com.tradingview.lightweightcharts.api.options.models.SeriesOptionsCommon
 import com.tradingview.lightweightcharts.api.series.common.SeriesData
+import com.tradingview.lightweightcharts.api.series.models.TimeRange
 import com.tradingview.lightweightcharts.example.app.model.ChartSeriesModel
 
 fun ChartApiDelegate.removeSeriesEx(seriesApi: SeriesApi?, onSeriesDeleted: () -> Unit) {
@@ -31,7 +32,12 @@ fun ChartApiDelegate.setupSeries(chartSeriesModel: ChartSeriesModel) {
     }
 
     if (seriesApi != null) {
-        seriesApi.setData(chartSeriesModel.getList())
+        val list = chartSeriesModel.getList()
+        seriesApi.setData(list)
+        timeScale.setVisibleRange(TimeRange(
+            from = list.first().time,
+            to = list.last().time
+        ))
     } else {
         createSeries(chartSeriesModel.getSeriesOptions(), chartSeriesModel.getList()) {
             removeSeriesEx(chartSeriesModel.seriesApi) {}

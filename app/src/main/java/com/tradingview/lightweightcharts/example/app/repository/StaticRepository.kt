@@ -184,7 +184,7 @@ class StaticRepository {
             val data = listRealTimeEmulationSeriesCandlestickData()
             val newData = mutableListOf<SeriesData>()
             val timestamp = 1263096000L
-            val subList = data.subList(0, data.size)
+            val subList = data.subList(0, 12)
             for (i in 0 until subList.size) {
                 val add = if (i % 8 == 0) 1 else 0
                 val candlestickData = subList[i] as CandlestickData

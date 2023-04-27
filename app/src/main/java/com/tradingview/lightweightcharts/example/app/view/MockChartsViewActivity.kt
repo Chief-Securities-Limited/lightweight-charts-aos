@@ -21,6 +21,7 @@ import com.tradingview.lightweightcharts.api.options.models.CrosshairLineOptions
 import com.tradingview.lightweightcharts.api.options.models.CrosshairOptions
 import com.tradingview.lightweightcharts.api.options.models.PriceScaleOptions
 import com.tradingview.lightweightcharts.api.options.models.TrackingModeOptions
+import com.tradingview.lightweightcharts.api.options.models.priceScaleMargins
 import com.tradingview.lightweightcharts.api.options.models.timeScaleOptions
 import com.tradingview.lightweightcharts.api.series.enums.CrosshairMode
 import com.tradingview.lightweightcharts.api.series.enums.LineStyle
@@ -109,6 +110,7 @@ class MockDataChartsActivity : AppCompatActivity() {
         MOCK_CHART_TYPE_LIST.forEach { type ->
             val chartsView = findChartsView(type)
             chartsView.api.applyOptions(chartOptions)
+            chartsView.api.timeScale.fitContent()
             chartsView.addTouchDelegate(NestedScrollDelegate(this))
 
             chartsView.subscribeOnChartStateChange {
@@ -312,7 +314,7 @@ class MockDataChartsActivity : AppCompatActivity() {
         return ChartOptions(
             timeScale = timeScaleOptions {
                 fixLeftEdge = true
-                fixRightEdge = true
+//                fixRightEdge = true
                 lockVisibleTimeRangeOnResize = true
                 timeVisible = true
             },
