@@ -73,8 +73,6 @@ class ChartsViewSyncHelper {
         private val visibleLogicalRangeChangeListener: VisibleLogicalRangeChangeListener,
         private val crosshairMoveListener: CrosshairMoveListener) {
 
-        private var lastCrosshairTime: Long? = -1L
-
         val onVisibleLogicalRangeChanged = fun(logicalRange: LogicalRange?) {
             if (touchChartsHashCode.code == layout.hashCode()) {
                 visibleLogicalRangeChangeListener.onVisibleLogicalRangeChange(layout, logicalRange)
@@ -83,8 +81,7 @@ class ChartsViewSyncHelper {
 
         val onCrosshairMove = fun(params: MouseEventParams) {
             val time = params.time?.date?.time
-            if (touchChartsHashCode.code == layout.hashCode() && lastCrosshairTime != time) {
-                lastCrosshairTime = time
+            if (touchChartsHashCode.code == layout.hashCode()) {
                 crosshairMoveListener.onCrosshairMove(layout, params)
             }
         }
@@ -99,7 +96,7 @@ class ChartsViewSyncHelper {
                     }
 
                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                        lastCrosshairTime = -1L
+
                     }
                 }
                 return false

@@ -216,6 +216,7 @@
                 android:padding="8dp"
                 android:textColor="@color/design_default_color_surface"
                 android:visibility="gone"
+                android:elevation="10dp"
                 app:layout_constraintTop_toTopOf="parent">
 
             </TextView>

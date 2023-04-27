@@ -6,6 +6,7 @@ import android.util.Log
 import android.util.Size
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.core.view.isVisible
 import com.tradingview.lightweightcharts.api.series.models.LogicalRange
 import com.tradingview.lightweightcharts.api.series.models.MouseEventParams
@@ -21,6 +22,7 @@ class ChartsToolsLayout @JvmOverloads constructor(
 
     private var chartsView: ChartsView? = null
     private var verticalView = View(context)
+//    private var crosshairLabelView = TextView(context)
     private var hasAddCrossHairView = false
 
     private val chartsViewWidth = ChartsViewWidth()
@@ -33,8 +35,10 @@ class ChartsToolsLayout @JvmOverloads constructor(
     private val curMarkersMap = mutableMapOf<Time, View>()
     private var hasSubscribeMarkersHandle = false
     private var markersSize: Size
+    private var markersEnable = false
 
     private val onVisibleLogicalRangeChanged = fun(params: LogicalRange?) {
+        if (!markersEnable) return
         updateMarkers()
     }
 
@@ -53,6 +57,10 @@ class ChartsToolsLayout @JvmOverloads constructor(
 
             chartsView?.api?.priceScale()?.width {
                 chartsViewWidth.setPriceWidth(it)
+            }
+
+            chartsView?.api?.timeScale?.subscribeSizeChange {
+                Log.d("timeScaleHeight", "${it}")
             }
         }
 
@@ -78,7 +86,7 @@ class ChartsToolsLayout @JvmOverloads constructor(
             hasSubscribeMarkersHandle = true
             chartsView?.api?.timeScale?.subscribeVisibleLogicalRangeChange(onVisibleLogicalRangeChanged)
         }
-
+        markersEnable = true
         updateMarkers()
     }
 
@@ -87,6 +95,7 @@ class ChartsToolsLayout @JvmOverloads constructor(
     }
 
     fun clearMarkers() {
+        markersEnable = false
         curMarkersMap.entries.forEach {
             removeView(it.value)
             markersAdapter?.releaseMarkerView(it.key, it.value)
@@ -110,6 +119,12 @@ class ChartsToolsLayout @JvmOverloads constructor(
             chartsView.api.timeScale.timeToCoordinate(time) {
                 if (it != null) {
                     verticalView.x = it / chartsViewWidth.getWidth() * chartsView.width
+
+//                    val height = (chartsView.height * 1F / chartsView.width) * chartsViewWidth.getWidth()
+//                    crosshairLabelView.y = params.point!!.y / height * chartsView.height
+//                    val prices = params.seriesPrices?.first()?.prices
+//                    crosshairLabelView.text = prices?.high?.toString()
+//                    Log.d("crosshairLabelView","${prices?.toString()}")
                 }
             }
         }
@@ -133,6 +148,11 @@ class ChartsToolsLayout @JvmOverloads constructor(
                     crossHairWidth,
                     crossHairHeight
                 ))
+//                crosshairLabelView.setBackgroundResource(R.color.colorPrimary)
+//                addView(crosshairLabelView, LayoutParams(
+//                    100,
+//                    100
+//                ))
             }
         }
     }
@@ -145,8 +165,10 @@ class ChartsToolsLayout @JvmOverloads constructor(
 
         chartsView?.api?.timeScale?.also { timeScale ->
             markerTimeList.forEach { time ->
+                if (!markersEnable) return@also
                 val currentTimeMillis = System.currentTimeMillis()
                 timeScale.timeToCoordinate(time) {
+                    if (!markersEnable) return@timeToCoordinate
                     it?.also {
                         Log.d(TAG, "timeToCoordinate Time: ${it}")
                         if (it < 0 || it > chartsViewWidth.getTimeWidth()) {

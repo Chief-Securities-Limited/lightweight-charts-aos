@@ -85,7 +85,6 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun observeChartsData(type: MockChartType, owner: LifecycleOwner, observer: Observer<ChartModel>) {
-        val value = seriesDataMap[MockChartType.K_LINE]?.value
         seriesDataMap[type]?.observe(owner, observer)
     }
 

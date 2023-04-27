@@ -27,7 +27,10 @@ fun ChartApiDelegate.setupSeries(chartSeriesModel: ChartSeriesModel) {
     if (!chartSeriesModel.isShow) {
         removeSeriesEx(chartSeriesModel.seriesApi) {}
         chartSeriesModel.seriesApi = null
-    } else if (seriesApi != null) {
+        return
+    }
+
+    if (seriesApi != null) {
         seriesApi.setData(chartSeriesModel.getList())
     } else {
         createSeries(chartSeriesModel.getSeriesOptions(), chartSeriesModel.getList()) {

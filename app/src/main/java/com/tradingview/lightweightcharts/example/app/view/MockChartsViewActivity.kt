@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Vibrator
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.view.postDelayed
 import androidx.lifecycle.ViewModelProvider
+import com.tradingview.lightweightcharts.api.chart.models.color.toIntColor
 import com.tradingview.lightweightcharts.api.options.enums.TrackingModeExitMode
 import com.tradingview.lightweightcharts.api.options.models.ChartOptions
 import com.tradingview.lightweightcharts.api.options.models.CrosshairLineOptions
@@ -21,6 +23,7 @@ import com.tradingview.lightweightcharts.api.options.models.PriceScaleOptions
 import com.tradingview.lightweightcharts.api.options.models.TrackingModeOptions
 import com.tradingview.lightweightcharts.api.options.models.timeScaleOptions
 import com.tradingview.lightweightcharts.api.series.enums.CrosshairMode
+import com.tradingview.lightweightcharts.api.series.enums.LineStyle
 import com.tradingview.lightweightcharts.api.series.enums.SeriesMarkerPosition
 import com.tradingview.lightweightcharts.api.series.enums.SeriesMarkerShape
 import com.tradingview.lightweightcharts.api.series.models.CandlestickData
@@ -148,8 +151,16 @@ class MockDataChartsActivity : AppCompatActivity() {
         })
 
         chartsViewSyncHelper.setSyncCrosshairMoveListener(object : SyncCrosshairMoveListener {
+
+            private var lastCrosshairTime: Long? = -1L
+
             override fun onSyncCrosshairMove(params: MouseEventParams) {
                 tv_cross_plank.isVisible = params.time != null
+
+                if (params.time?.date?.time == lastCrosshairTime) {
+                    return
+                }
+                lastCrosshairTime = params.time?.date?.time
                 params.time?.also { time ->
                     val chartModel = viewModel.getChartModel(MockChartType.K_LINE)
                     val seriesData = chartModel.get(K_LINE_MAIN_SERIES)?.findSeriesData(time)
@@ -309,6 +320,11 @@ class MockDataChartsActivity : AppCompatActivity() {
                 mode = CrosshairMode.NORMAL,
                 vertLine = CrosshairLineOptions(
                     visible = false
+                ),
+                horzLine = CrosshairLineOptions(
+                    style = LineStyle.SOLID,
+                    labelVisible = true,
+                    color = resources.getColor(R.color.colorPrimary).toIntColor()
                 )
             ),
             leftPriceScale = PriceScaleOptions(

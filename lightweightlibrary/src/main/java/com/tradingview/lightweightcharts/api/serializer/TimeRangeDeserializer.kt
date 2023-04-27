@@ -1,5 +1,6 @@
 package com.tradingview.lightweightcharts.api.serializer
 
+import android.util.Log
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.tradingview.lightweightcharts.api.series.models.Time
@@ -16,7 +17,7 @@ class TimeRangeDeserializer: Deserializer<TimeRange>() {
         val jsonObject = json.asJsonObject
         val from = jsonObject.get("from")
         val to = jsonObject.get("to")
-
+        Log.d("TimeRangeDeserializer","json: ${json}")
         return when {
             from.isNumber() -> {
                 TimeRange(Time.Utc(from.asLong), Time.Utc(to.asLong))
