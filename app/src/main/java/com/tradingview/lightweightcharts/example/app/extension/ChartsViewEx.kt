@@ -30,18 +30,23 @@ fun ChartApiDelegate.setupSeries(chartSeriesModel: ChartSeriesModel) {
         chartSeriesModel.seriesApi = null
         return
     }
+    val list = chartSeriesModel.getList()
+    val toTime = if (list.size > 50) list.get(49).time else list.last().time
 
     if (seriesApi != null) {
-        val list = chartSeriesModel.getList()
         seriesApi.setData(list)
         timeScale.setVisibleRange(TimeRange(
             from = list.first().time,
-            to = list.last().time
+            to = toTime
         ))
     } else {
-        createSeries(chartSeriesModel.getSeriesOptions(), chartSeriesModel.getList()) {
+        createSeries(chartSeriesModel.getSeriesOptions(), list) {
             removeSeriesEx(chartSeriesModel.seriesApi) {}
             chartSeriesModel.seriesApi = it
+            timeScale.setVisibleRange(TimeRange(
+                from = list.first().time,
+                to = toTime
+            ))
         }
     }
 }

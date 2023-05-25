@@ -87,7 +87,8 @@ class ChartsViewSyncHelper {
         }
 
         val touchDelegate = object : TouchDelegate {
-            override fun beforeTouchEvent(view: ViewGroup) {}
+            override fun beforeTouchEvent(view: ViewGroup) {
+            }
 
             override fun onTouchEvent(view: ViewGroup, event: MotionEvent): Boolean {
                 when (event.action) {

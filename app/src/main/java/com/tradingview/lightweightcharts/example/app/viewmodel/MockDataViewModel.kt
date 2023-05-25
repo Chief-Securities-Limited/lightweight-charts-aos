@@ -11,18 +11,22 @@ import com.tradingview.lightweightcharts.api.chart.models.color.toIntColor
 import com.tradingview.lightweightcharts.api.options.models.CandlestickSeriesOptions
 import com.tradingview.lightweightcharts.api.options.models.HistogramSeriesOptions
 import com.tradingview.lightweightcharts.api.options.models.LineSeriesOptions
+import com.tradingview.lightweightcharts.api.options.models.PriceScaleMargins
 import com.tradingview.lightweightcharts.api.series.common.SeriesData
 import com.tradingview.lightweightcharts.api.series.enums.LineType
 import com.tradingview.lightweightcharts.api.series.enums.LineWidth
+import com.tradingview.lightweightcharts.api.series.enums.PriceLineSource
 import com.tradingview.lightweightcharts.api.series.models.CandlestickData
 import com.tradingview.lightweightcharts.api.series.models.HistogramData
 import com.tradingview.lightweightcharts.api.series.models.LineData
+import com.tradingview.lightweightcharts.api.series.models.PriceScaleId
 import com.tradingview.lightweightcharts.api.series.models.Time
 import com.tradingview.lightweightcharts.example.app.model.ChartModel
 import com.tradingview.lightweightcharts.example.app.model.ChartSeriesModel
 import com.tradingview.lightweightcharts.example.app.model.KLineGroupType
 import com.tradingview.lightweightcharts.example.app.model.KLineTimeType
 import com.tradingview.lightweightcharts.example.app.model.MockChartType
+import com.tradingview.lightweightcharts.example.app.plugins.AutoscaleInfoProvider
 import com.tradingview.lightweightcharts.example.app.repository.StaticRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,28 +48,32 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
     private var curKLineGroupType = KLineGroupType.ONLY_K_LINE
 
     init {
-        kLineChartModel.put(K_LINE_MAIN_SERIES, ChartSeriesModel(true, CandlestickSeriesOptions(
+        kLineChartModel.put(K_LINE_MAIN_SERIES, ChartSeriesModel(K_LINE_MAIN_SERIES, true, CandlestickSeriesOptions(
             lastValueVisible = false,
+            priceLineVisible = true,
+//            scaleMargins = PriceScaleMargins(0.9F,0.1F),
+            priceScaleId = PriceScaleId.RIGHT,
+            autoscaleInfoProvider = AutoscaleInfoProvider()
         )))
-        kLineChartModel.put(K_LINE_MAIN_SERIES_TRANSPARENT, ChartSeriesModel(true, CandlestickSeriesOptions(
+        kLineChartModel.put(K_LINE_MAIN_SERIES_TRANSPARENT, ChartSeriesModel(K_LINE_MAIN_SERIES_TRANSPARENT, true, CandlestickSeriesOptions(
             lastValueVisible = false,
             visible = false
         )))
-        kLineChartModel.put(K_LINE_EMA_1, ChartSeriesModel(false, LineSeriesOptions(
+        kLineChartModel.put(K_LINE_EMA_1, ChartSeriesModel(K_LINE_EMA_1, false, LineSeriesOptions(
             lineWidth = LineWidth.ONE,
             baseLineVisible = false,
             priceLineVisible = false,
             lastValueVisible = false,
             color = Color.GREEN.toIntColor()
         )))
-        kLineChartModel.put(K_LINE_EMA_2, ChartSeriesModel(false, LineSeriesOptions(
+        kLineChartModel.put(K_LINE_EMA_2, ChartSeriesModel(K_LINE_EMA_2, false, LineSeriesOptions(
             lineWidth = LineWidth.ONE,
             baseLineVisible = false,
             priceLineVisible = false,
             lastValueVisible = false,
             color = Color.BLUE.toIntColor()
         )))
-        kLineChartModel.put(K_LINE_EMA_3, ChartSeriesModel(false, LineSeriesOptions(
+        kLineChartModel.put(K_LINE_EMA_3, ChartSeriesModel(K_LINE_EMA_3, false, LineSeriesOptions(
             lineWidth = LineWidth.ONE,
             baseLineVisible = false,
             priceLineVisible = false,
@@ -73,8 +81,8 @@ class MockDataViewModel(application: Application) : AndroidViewModel(application
             color = Color.RED.toIntColor()
         )))
 
-        mavolChartModel.put(MAVOL_SERIES, ChartSeriesModel(true, HistogramSeriesOptions()))
-        lineChartModel.put(LINE_SERIES, ChartSeriesModel(true, LineSeriesOptions()))
+        mavolChartModel.put(MAVOL_SERIES, ChartSeriesModel(MAVOL_SERIES, true, HistogramSeriesOptions()))
+        lineChartModel.put(LINE_SERIES, ChartSeriesModel(LINE_SERIES, true, LineSeriesOptions()))
 
         seriesDataMap[MockChartType.K_LINE] = MutableLiveData<ChartModel>()
         seriesDataMap[MockChartType.MAVOL] = MutableLiveData<ChartModel>()

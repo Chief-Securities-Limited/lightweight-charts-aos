@@ -9,7 +9,7 @@
     <com.tradingview.lightweightcharts.view.ChartsView
         android:id="@+id/charts_view"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="400dp" />
 
     <FrameLayout
         android:layout_width="match_parent"

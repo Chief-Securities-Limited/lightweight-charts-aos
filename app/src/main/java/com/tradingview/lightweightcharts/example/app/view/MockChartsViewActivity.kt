@@ -19,6 +19,7 @@ import com.tradingview.lightweightcharts.api.options.enums.TrackingModeExitMode
 import com.tradingview.lightweightcharts.api.options.models.ChartOptions
 import com.tradingview.lightweightcharts.api.options.models.CrosshairLineOptions
 import com.tradingview.lightweightcharts.api.options.models.CrosshairOptions
+import com.tradingview.lightweightcharts.api.options.models.PriceScaleMargins
 import com.tradingview.lightweightcharts.api.options.models.PriceScaleOptions
 import com.tradingview.lightweightcharts.api.options.models.TrackingModeOptions
 import com.tradingview.lightweightcharts.api.options.models.priceScaleMargins
@@ -33,6 +34,8 @@ import com.tradingview.lightweightcharts.api.series.models.MouseEventParams
 import com.tradingview.lightweightcharts.api.series.models.SeriesMarker
 import com.tradingview.lightweightcharts.api.series.models.Time
 import com.tradingview.lightweightcharts.example.app.R
+import com.tradingview.lightweightcharts.example.app.customcharts.CustomLightChartsSyncHelper
+import com.tradingview.lightweightcharts.example.app.customcharts.CustomLightChartsView
 import com.tradingview.lightweightcharts.example.app.extension.setupSeries
 import com.tradingview.lightweightcharts.example.app.model.KLineGroupType
 import com.tradingview.lightweightcharts.example.app.model.KLineTimeType
@@ -41,6 +44,7 @@ import com.tradingview.lightweightcharts.example.app.model.MockChartType
 import com.tradingview.lightweightcharts.example.app.view.pager.NestedScrollDelegate
 import com.tradingview.lightweightcharts.example.app.viewmodel.MockDataViewModel
 import com.tradingview.lightweightcharts.example.app.viewmodel.MockDataViewModel.Companion.K_LINE_MAIN_SERIES
+import com.tradingview.lightweightcharts.example.app.viewmodel.MockDataViewModel.Companion.LINE_SERIES
 import com.tradingview.lightweightcharts.example.app.viewmodel.MockDataViewModel.Companion.MAVOL_SERIES
 import com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout
 import com.tradingview.lightweightcharts.example.app.widget.ChartsViewSyncHelper
@@ -67,7 +71,7 @@ class MockDataChartsActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MockDataViewModel
 
-    private val chartsViewSyncHelper = ChartsViewSyncHelper()
+    private val chartsViewSyncHelper = CustomLightChartsSyncHelper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +119,21 @@ class MockDataChartsActivity : AppCompatActivity() {
 
             chartsView.subscribeOnChartStateChange {
                 if (it is ChartsView.State.Ready) {
-                    chartsViewSyncHelper.addChartsView(findChartsViewLayout(type))
+                    chartsViewSyncHelper.addChartsView(chartsView)
+                }
+            }
+
+            when (type) {
+                MockChartType.K_LINE -> {
+                    chartsView.mainSeriesId = K_LINE_MAIN_SERIES
+                }
+
+                MockChartType.MAVOL -> {
+                    chartsView.mainSeriesId = MAVOL_SERIES
+                }
+
+                MockChartType.LINE -> {
+                    chartsView.mainSeriesId = LINE_SERIES
                 }
             }
         }
@@ -136,51 +154,35 @@ class MockDataChartsActivity : AppCompatActivity() {
             }
         }
 
-        charts_tools_layout_1.setSetMarkersAdapter(object : ChartsToolsLayout.MarkersAdapter {
-            val cacheViews = mutableListOf<View>()
-            override fun getMarkerView(time: Time): View {
-                if (cacheViews.isNotEmpty()) {
-                    return cacheViews.removeFirst()
-                }
-                return View(this@MockDataChartsActivity).apply {
-                    this.setBackgroundResource(R.mipmap.ic_launcher_round)
-                }
-            }
-
-            override fun releaseMarkerView(time: Time, view: View) {
-                cacheViews.add(view)
-            }
-        })
-
-        chartsViewSyncHelper.setSyncCrosshairMoveListener(object : SyncCrosshairMoveListener {
-
-            private var lastCrosshairTime: Long? = -1L
-
-            override fun onSyncCrosshairMove(params: MouseEventParams) {
-                tv_cross_plank.isVisible = params.time != null
-
-                if (params.time?.date?.time == lastCrosshairTime) {
-                    return
-                }
-                lastCrosshairTime = params.time?.date?.time
-                params.time?.also { time ->
-                    val chartModel = viewModel.getChartModel(MockChartType.K_LINE)
-                    val seriesData = chartModel.get(K_LINE_MAIN_SERIES)?.findSeriesData(time)
-                    if (seriesData is CandlestickData) {
-                        val text = "開盤：${seriesData.open} 收盤：${seriesData.close} 最高：${seriesData.high}  最低：${seriesData.low}"
-                        tv_cross_plank.text = text
-                    }
-
-                    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                    if (vibrator.hasVibrator()) {
-                        if (vibrator.hasVibrator()) {
-                            val pattern = longArrayOf(0, 30)
-                            vibrator.vibrate(pattern, -1)
-                        }
-                    }
-                }
-            }
-        })
+//        chartsViewSyncHelper.setSyncCrosshairMoveListener(object : SyncCrosshairMoveListener {
+//
+//            private var lastCrosshairTime: Long? = -1L
+//
+//            override fun onSyncCrosshairMove(params: MouseEventParams) {
+//                tv_cross_plank.isVisible = params.time != null
+//
+//                if (params.time?.date?.time == lastCrosshairTime) {
+//                    return
+//                }
+//                lastCrosshairTime = params.time?.date?.time
+//                params.time?.also { time ->
+//                    val chartModel = viewModel.getChartModel(MockChartType.K_LINE)
+//                    val seriesData = chartModel.get(K_LINE_MAIN_SERIES)?.findSeriesData(time)
+//                    if (seriesData is CandlestickData) {
+//                        val text = "開盤：${seriesData.open} 收盤：${seriesData.close} 最高：${seriesData.high}  最低：${seriesData.low}"
+//                        tv_cross_plank.text = text
+//                    }
+//
+//                    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+//                    if (vibrator.hasVibrator()) {
+//                        if (vibrator.hasVibrator()) {
+//                            val pattern = longArrayOf(0, 30)
+//                            vibrator.vibrate(pattern, -1)
+//                        }
+//                    }
+//                }
+//            }
+//        })
 
 
         rg_k_line_group_type.setOnCheckedChangeListener { group, checkedId ->
@@ -253,8 +255,6 @@ class MockDataChartsActivity : AppCompatActivity() {
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
         }
-
-
     }
 
     private fun setupObserve() {
@@ -279,34 +279,26 @@ class MockDataChartsActivity : AppCompatActivity() {
 
     private fun setupObserveChartsData(type: MockChartType) {
         viewModel.observeChartsData(type, this@MockDataChartsActivity) { chartModel ->
-            val apiDelegate = findChartsView(type).api
+            val chartsView = findChartsView(type)
             chartModel.getAll().forEach { chartSeriesModel ->
-                apiDelegate.setupSeries(chartSeriesModel)
-            }
-
-            val chartsViewLayout = findChartsViewLayout(type)
-            val customMarkers = chartModel.getCustomMarkers()
-            if (customMarkers.isEmpty()) {
-                chartsViewLayout.clearMarkers()
-            } else {
-                chartsViewLayout.setMarkers(customMarkers)
+                if (chartSeriesModel.isShow) {
+                    chartsView.setSeriesData(
+                        chartSeriesModel.seriesId,
+                        chartSeriesModel.getSeriesOptions(),
+                        chartSeriesModel.getList()
+                    )
+                } else {
+                    chartsView.removeSeries(chartSeriesModel.seriesId)
+                }
             }
         }
     }
 
-    private fun findChartsView(type: MockChartType): ChartsView {
+    private fun findChartsView(type: MockChartType): CustomLightChartsView {
         return when (type) {
             MockChartType.K_LINE -> charts_view_1
             MockChartType.MAVOL -> charts_view_2
             MockChartType.LINE -> charts_view_3
-        }
-    }
-
-    private fun findChartsViewLayout(type: MockChartType): ChartsToolsLayout {
-        return when (type) {
-            MockChartType.K_LINE -> charts_tools_layout_1
-            MockChartType.MAVOL -> charts_tools_layout_2
-            MockChartType.LINE -> charts_tools_layout_3
         }
     }
 
@@ -321,7 +313,7 @@ class MockDataChartsActivity : AppCompatActivity() {
             crosshair = CrosshairOptions(
                 mode = CrosshairMode.NORMAL,
                 vertLine = CrosshairLineOptions(
-                    visible = false
+                    visible = true
                 ),
                 horzLine = CrosshairLineOptions(
                     style = LineStyle.SOLID,
@@ -333,9 +325,10 @@ class MockDataChartsActivity : AppCompatActivity() {
                 visible = false
             ),
             rightPriceScale = PriceScaleOptions(
-                visible = false
+                visible = true,
+//                scaleMargins = PriceScaleMargins(0.22F,0.22F)
             ),
-            trackingMode = TrackingModeOptions(exitMode = TrackingModeExitMode.ON_TOUCH_END)
+            trackingMode = TrackingModeOptions(exitMode = TrackingModeExitMode.ON_TOUCH_END),
         )
     }
 }

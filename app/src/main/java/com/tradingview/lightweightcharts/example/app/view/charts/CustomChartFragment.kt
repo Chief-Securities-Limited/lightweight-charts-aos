@@ -123,25 +123,25 @@ class CustomChartFragment : Fragment() {
             }
         }
 
-        charts_tools_layout_1.setSetMarkersAdapter(object : ChartsToolsLayout.MarkersAdapter {
-
-            val cacheViews = mutableListOf<View>()
-
-            override fun getMarkerView(time: Time): View {
-
-                if (cacheViews.isNotEmpty()) {
-                    return cacheViews.removeFirst()
-                }
-
-                return View(context).apply {
-                    this.setBackgroundResource(R.mipmap.ic_launcher_round)
-                }
-            }
-
-            override fun releaseMarkerView(time: Time, view: View) {
-                cacheViews.add(view)
-            }
-        })
+//        charts_tools_layout_1.setSetMarkersAdapter(object : ChartsToolsLayout.MarkersAdapter {
+//
+//            val cacheViews = mutableListOf<View>()
+//
+//            override fun getMarkerView(time: Time): View {
+//
+//                if (cacheViews.isNotEmpty()) {
+//                    return cacheViews.removeFirst()
+//                }
+//
+//                return View(context).apply {
+//                    this.setBackgroundResource(R.mipmap.ic_launcher_round)
+//                }
+//            }
+//
+//            override fun releaseMarkerView(time: Time, view: View) {
+//                cacheViews.add(view)
+//            }
+//        })
     }
 
     private fun observe() {

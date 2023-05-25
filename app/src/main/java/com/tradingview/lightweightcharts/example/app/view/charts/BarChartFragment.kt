@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.tradingview.lightweightcharts.api.chart.models.ImageMimeType
 import com.tradingview.lightweightcharts.api.chart.models.color.surface.SolidColor
 import com.tradingview.lightweightcharts.api.chart.models.color.toIntColor
+import com.tradingview.lightweightcharts.api.interfaces.SeriesApi
 import com.tradingview.lightweightcharts.api.options.enums.TrackingModeExitMode
 import com.tradingview.lightweightcharts.api.options.models.*
 import com.tradingview.lightweightcharts.api.series.enums.CrosshairMode
@@ -40,6 +41,8 @@ class BarChartFragment : Fragment() {
     private lateinit var viewModel: BarChartViewModel
 
     private val chartApi get() = chartsView.api
+
+    private var series: SeriesApi? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +68,10 @@ class BarChartFragment : Fragment() {
                                 downColor = Color.BLACK.toIntColor(),
                                 upColor = Color.BLACK.toIntColor(),
                             ),
-                            onSeriesCreated = { series -> series.setData(data.list) }
+                            onSeriesCreated = { series ->
+                                this.series = series
+                                series.setData(data.list)
+                            }
                         )
                     }
                     applyChartOptions()
@@ -75,6 +81,14 @@ class BarChartFragment : Fragment() {
                 is ChartsView.State.Error -> {
                     Toast.makeText(context, state.exception.localizedMessage, Toast.LENGTH_LONG).show()
                 }
+            }
+        }
+
+        chartsView.api.subscribeCrosshairMove {
+            val y = it.point!!.y
+            Log.d("coordinateToPrice", "pointY: $y")
+            this.series?.coordinateToPrice(y) {
+                Log.d("coordinateToPrice", "$it")
             }
         }
 

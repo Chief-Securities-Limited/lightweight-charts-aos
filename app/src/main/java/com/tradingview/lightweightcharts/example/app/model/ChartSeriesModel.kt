@@ -7,6 +7,7 @@ import com.tradingview.lightweightcharts.api.series.models.Time
 import com.tradingview.lightweightcharts.api.series.models.TimeRange
 
 class ChartSeriesModel(
+    val seriesId: String,
     var isShow: Boolean = true,
     private val seriesOptions: SeriesOptionsCommon
 ) {
