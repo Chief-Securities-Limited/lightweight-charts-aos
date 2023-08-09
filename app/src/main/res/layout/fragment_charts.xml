@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.tradingview.lightweightcharts.view.ChartsView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/charts_view"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="60dp"
+    android:padding="12dp">
 
-</com.tradingview.lightweightcharts.view.ChartsView>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:layout_weight="1" />
+
+    <com.tradingview.lightweightcharts.view.ChartsView
+        android:id="@+id/charts_view"
+        android:layout_width="100dp"
+        android:layout_height="60dp" />
+
+</LinearLayout>

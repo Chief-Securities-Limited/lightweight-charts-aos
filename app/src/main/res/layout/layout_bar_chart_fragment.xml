@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/chart_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.tradingview.lightweightcharts.example.app.view.DebugChartsView
+    <com.tradingview.lightweightcharts.view.ChartsView
         android:id="@+id/charts_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="400dp" />
 
-    <Button
-        android:id="@+id/screenshot_btn"
-        android:layout_width="@dimen/btn_width"
-        android:layout_height="@dimen/btn_height"
-        android:text="@string/screenshot"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/screenshot_btn"
+            android:layout_width="@dimen/btn_width"
+            android:layout_height="@dimen/btn_height"
+            android:text="@string/screenshot"/>
+    </FrameLayout>
 
-</FrameLayout>
+</LinearLayout>

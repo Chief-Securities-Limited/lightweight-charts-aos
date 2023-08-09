@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,10 +18,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.tradingview.lightweightcharts.api.chart.models.ImageMimeType
 import com.tradingview.lightweightcharts.api.chart.models.color.surface.SolidColor
 import com.tradingview.lightweightcharts.api.chart.models.color.toIntColor
+import com.tradingview.lightweightcharts.api.interfaces.SeriesApi
 import com.tradingview.lightweightcharts.api.options.enums.TrackingModeExitMode
 import com.tradingview.lightweightcharts.api.options.models.*
 import com.tradingview.lightweightcharts.api.series.enums.CrosshairMode
 import com.tradingview.lightweightcharts.api.series.models.PriceScaleId
+import com.tradingview.lightweightcharts.api.series.models.Time
 import com.tradingview.lightweightcharts.example.app.R
 import com.tradingview.lightweightcharts.example.app.viewmodel.BarChartViewModel
 import com.tradingview.lightweightcharts.view.ChartsView
@@ -30,7 +33,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 @RuntimePermissions
-class BarChartFragment: Fragment() {
+class BarChartFragment : Fragment() {
     private val chartsView get() = requireView().findViewById<ChartsView>(R.id.charts_view)
     private val screenshotButton get() = requireView().findViewById<Button>(R.id.screenshot_btn)
 
@@ -38,6 +41,8 @@ class BarChartFragment: Fragment() {
     private lateinit var viewModel: BarChartViewModel
 
     private val chartApi get() = chartsView.api
+
+    private var series: SeriesApi? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,17 +68,38 @@ class BarChartFragment: Fragment() {
                                 downColor = Color.BLACK.toIntColor(),
                                 upColor = Color.BLACK.toIntColor(),
                             ),
-                            onSeriesCreated = { series -> series.setData(data.list) }
+                            onSeriesCreated = { series ->
+                                this.series = series
+                                series.setData(data.list)
+                            }
                         )
                     }
                     applyChartOptions()
                     screenshotButton.setOnClickListener { shareScreenshot() }
                 }
+
                 is ChartsView.State.Error -> {
                     Toast.makeText(context, state.exception.localizedMessage, Toast.LENGTH_LONG).show()
                 }
             }
         }
+
+        chartsView.api.subscribeCrosshairMove {
+            val y = it.point!!.y
+            Log.d("coordinateToPrice", "pointY: $y")
+            this.series?.coordinateToPrice(y) {
+                Log.d("coordinateToPrice", "$it")
+            }
+        }
+
+
+//        chartApi.timeScale.subscribeVisibleLogicalRangeChange {
+//            val time = System.currentTimeMillis()
+//            chartApi.timeScale.timeToCoordinate(Time.BusinessDay(2019, 1, 17)) {
+//                Log.d("timeToCoordinate Float", "${it}")
+//                Log.d("timeToCoordinate", "${System.currentTimeMillis() - time}")
+//            }
+//        }
     }
 
     @NeedsPermission(
@@ -94,6 +120,7 @@ class BarChartFragment: Fragment() {
             shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
             context.startActivity(Intent.createChooser(shareIntent, "Share image using"))
         }
+
     }
 
     private fun applyChartOptions() {

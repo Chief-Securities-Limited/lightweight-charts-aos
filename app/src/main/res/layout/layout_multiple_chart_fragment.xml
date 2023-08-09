@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_chart_title_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:text="chart 1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_chart_title_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout
+        android:id="@+id/charts_cross_hair_layout_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.tradingview.lightweightcharts.view.ChartsView
+            android:id="@+id/charts_view_1"
+            android:layout_width="match_parent"
+            android:layout_height="150dp" />
+
+    </com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout>
+
+    <TextView
+        android:id="@+id/tv_chart_title_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:text="chart 1" />
+
+    <com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout
+        android:id="@+id/charts_cross_hair_layout_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.tradingview.lightweightcharts.view.ChartsView
+            android:id="@+id/charts_view_2"
+            android:layout_width="match_parent"
+            android:visibility="visible"
+            android:layout_height="150dp" />
+
+    </com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout>
+
+    <TextView
+        android:id="@+id/tv_chart_title_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:text="chart 1" />
+
+    <com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout
+        android:id="@+id/charts_cross_hair_layout_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.tradingview.lightweightcharts.view.ChartsView
+            android:id="@+id/charts_view_3"
+            android:layout_width="match_parent"
+            android:visibility="visible"
+            android:layout_height="150dp" />
+
+    </com.tradingview.lightweightcharts.example.app.widget.ChartsToolsLayout>
+</LinearLayout>
