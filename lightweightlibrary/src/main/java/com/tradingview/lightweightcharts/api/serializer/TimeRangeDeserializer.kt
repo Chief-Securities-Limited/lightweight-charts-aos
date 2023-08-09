@@ -17,7 +17,7 @@ class TimeRangeDeserializer: Deserializer<TimeRange>() {
         val jsonObject = json.asJsonObject
         val from = jsonObject.get("from")
         val to = jsonObject.get("to")
-        Log.d("TimeRangeDeserializer","json: ${json}")
+
         return when {
             from.isNumber() -> {
                 TimeRange(Time.Utc(from.asLong), Time.Utc(to.asLong))
