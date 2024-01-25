@@ -107,6 +107,10 @@ open class ChartsView @JvmOverloads constructor(
         webView.removeTouchDelegate(touchDelegate)
     }
 
+    fun getContentHeight(): Int {
+        return webView.contentHeight
+    }
+
     private fun checkSupportedFeature(): List<String> {
         return HashMap<String, Boolean>(features.size)
             .apply { features.forEach { this[it] = isFeatureSupported(it) } }

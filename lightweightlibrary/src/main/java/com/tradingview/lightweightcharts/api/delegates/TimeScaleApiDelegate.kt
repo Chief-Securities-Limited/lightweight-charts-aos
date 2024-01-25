@@ -25,6 +25,7 @@ import com.tradingview.lightweightcharts.api.interfaces.TimeScaleApi.Params.POSI
 import com.tradingview.lightweightcharts.api.interfaces.TimeScaleApi.Params.RANGE
 import com.tradingview.lightweightcharts.api.options.models.TimeScaleOptions
 import com.tradingview.lightweightcharts.api.serializer.*
+import com.tradingview.lightweightcharts.api.series.models.LogicalRange
 import com.tradingview.lightweightcharts.api.series.models.Time
 import com.tradingview.lightweightcharts.api.series.models.TimeRange
 import com.tradingview.lightweightcharts.runtime.controller.WebMessageController
@@ -75,6 +76,15 @@ class TimeScaleApiDelegate(
             SET_VISIBLE_RANGE,
             mapOf(
                 RANGE to range
+            )
+        )
+    }
+
+    override fun setVisibleLogicalRange(logicalRange: LogicalRange) {
+        controller.callFunction(
+            TimeScaleApi.Func.SET_VISIBLE_LOGICAL_RANGE,
+            mapOf(
+                RANGE to logicalRange
             )
         )
     }
@@ -195,6 +205,22 @@ class TimeScaleApiDelegate(
         controller.callUnsubscribe(
             SUBSCRIBE_SIZE_CHANGE,
             subscription = onSizeChange
+        )
+    }
+
+
+    override fun subscribeVisibleLogicalRangeChange(onVisibleLogicalRangeChange: (params: LogicalRange?) -> Unit) {
+        controller.callSubscribe(
+            TimeScaleApi.Func.SUBSCRIBE_VISIBLE_LOGICAL_RANGE_CHANGE,
+            callback = onVisibleLogicalRangeChange,
+            deserializer = LogicalRangeDeserializer()
+        )
+    }
+
+    override fun unsubscribeVisibleLogicalRangeChange(onVisibleLogicalRangeChange: (params: LogicalRange?) -> Unit) {
+        controller.callUnsubscribe(
+            TimeScaleApi.Func.SUBSCRIBE_VISIBLE_LOGICAL_RANGE_CHANGE,
+            subscription = onVisibleLogicalRangeChange
         )
     }
 }
