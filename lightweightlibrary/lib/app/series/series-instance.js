@@ -111,7 +111,7 @@ class PriceToCoordinate extends SeriesInstanceMethod {
 class CoordinateToPrice extends SeriesInstanceMethod {
     constructor() {
         super("coordinateToPrice", function (series, params, resolve) {
-            resolve(series.coordinateToPrice(input.params.coordinate));
+            resolve(series.coordinateToPrice(params.coordinate));
         });
     }
 }
